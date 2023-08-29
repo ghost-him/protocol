@@ -3,8 +3,6 @@
 #include "protocol/protocolBuilder.h"
 #include "protocol/protocolConverter.h"
 
-
-
 std::shared_ptr<ProtocolOption> option = std::make_shared<ProtocolOption>();
 
 void init() {
@@ -13,6 +11,7 @@ void init() {
     option->append(4, UINT, "总长度");
     option->append(2, UINT, "消息组");
     option->append(4, UINT, "偏移量");
+    option->append(20, STR, "说明信息");
     option->append(3, SIZE, "消息长度");
 }
 
@@ -26,9 +25,10 @@ int main() {
     // 设置头标记
     builder.set_head(0, 1);     // 版本号          1
     builder.set_head(1, 1);     // 消息类型        1
-    builder.set_head(2, 8814);    // 总长度          20
+    builder.set_head(2, 20);    // 总长度          20
     builder.set_head(3, 0);     // 消息组          0
     builder.set_head(4, 0);     // 当前消息的偏移量 0
+    builder.set_head(5, "支持字符");     // 说明信息 0
 
 
     // 发送a数组
@@ -67,11 +67,13 @@ int main() {
     std::cout << "2 " << converter.get_head<unsigned int>(2) << std::endl;
     std::cout << "3 " << converter.get_head<unsigned int>(3) << std::endl;
     std::cout << "4 " << converter.get_head<unsigned int>(4) << std::endl;
-    std::cout << "5 " << converter.get_head<unsigned int>(5) << std::endl;
+    std::cout << "5 " << converter.get_head<std::string>(5) << std::endl;
+    std::cout << "6 " << converter.get_head<unsigned int>(6) << std::endl;
     // 开一个空间，用于存放数据部分
     char b[5] = {};
     // 将数据部分放到b数组中
     converter.get_data(b);
+    std::cout << "解析出数据内容为 ";
     // 输出b的内容
     std::cout << b << std::endl;
 

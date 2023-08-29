@@ -19,6 +19,24 @@ public:
 			_head[start + i] = (data >> (8 * i)) & 0xff;
 		}
 	}
+
+	template<>
+	void set_head<const char*>(unsigned int index, const char* data) {
+		_Option& option = _option->_optionList[index];
+
+		// 获取当前标记开始的位置
+		unsigned int start = _sum[index];
+		switch (option._type) {
+		case STR: {
+			for (unsigned int i = 0; i < option._length; i++) {
+				_head[start + i] = data[i];
+			}
+			break;
+		}
+		}
+	}
+
+
 	// 设置数据内容
 	std::shared_ptr<Protocol> set_data(void* data, unsigned int size);
 

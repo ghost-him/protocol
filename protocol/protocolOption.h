@@ -8,6 +8,7 @@
 enum protocolType {
 	UINT,
 	INT,
+	STR,
 	SIZE
 };
 

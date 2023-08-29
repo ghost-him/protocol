@@ -2,8 +2,6 @@
 #include "protocol.h"
 #include "protocolOption.h"
 
-
-
 class ProtocolConverter {
 public:
 	ProtocolConverter();
@@ -37,6 +35,24 @@ public:
 		}
 		}
 	}
+
+	template<>
+	std::string get_head<std::string>(unsigned int index) {
+		_Option& option = _option->_optionList[index];
+		// 获取当前标记开始的位置
+		int start = _sum[index];
+		switch (option._type) {
+		case STR: {
+			std::string res;
+			for (int i = 0; i < option._length; i++) {
+				res.push_back(_data[start + i]);
+			}
+			return res;
+		}
+		}
+	}
+
+
 
 	void get_data(void* destination);
 	unsigned int get_data_size();

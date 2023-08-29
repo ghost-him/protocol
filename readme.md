@@ -221,22 +221,3 @@ converter.convert(data);
  std::cout << b << std::endl;
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-=================================
-
-protocolOption：
-
-control：使用位来控制信息
-
-第 0 位：是否设置了消息长度 0 否 1 是

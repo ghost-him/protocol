@@ -7,17 +7,17 @@
 class ProtocolConverter {
 public:
 	ProtocolConverter();
-	// 加载要解码的数据
+	// 鍔犺浇瑕佽В鐮佺殑鏁版嵁
 	void convert(unsigned char* data);
 
-	// 加载协议规则
+	// 鍔犺浇鍗忚瑙勫垯
 	void load(std::shared_ptr<ProtocolOption> option);
 
-	template<class res>
-	res get_head(unsigned int index) {
+	template<class Value>
+	Value get_head(unsigned int index) {
 		_Option& option = _option->_optionList[index];
 
-		// 获取当前标记开始的位置
+		// 鑾峰彇褰撳墠鏍囪寮�濮嬬殑浣嶇疆
 		int start = _sum[index];
 		switch (option._type) {
 		case INT: {
@@ -46,13 +46,13 @@ public:
 	void get_data(void* destination);
 
 private:
-	// 数据的原地址
+	// 鏁版嵁鐨勫師鍦板潃
 	unsigned char* _data;
-	// 协议格式
+	// 鍗忚鏍煎紡
 	std::shared_ptr<ProtocolOption> _option;
-	// 头标记的个数
+	// 澶存爣璁扮殑涓暟
 	unsigned int _length;
-	// 头标记的启始位置
+	// 澶存爣璁扮殑鍚浣嶇疆
 	std::deque<unsigned int> _sum;
 	
 };

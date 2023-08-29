@@ -31,3 +31,9 @@ void ProtocolConverter::get_data(void* destination) {
 	// 将内容复制出去
 	memcpy(destination,  _data + _sum[_length], data_size);
 }
+
+unsigned int ProtocolConverter::get_data_size() {
+	// 计算数据部分的长度：总长度 - 首部的长度
+	unsigned int data_size = get_head<unsigned int>(_option->_size_index) - _sum[_length];
+	return data_size;
+}

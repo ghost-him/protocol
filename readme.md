@@ -101,7 +101,6 @@ bool append(unsigned int length, protocolType type, std::string description = ""
 enum protocolType {
 	UINT,
 	INT,
-	STR,
 	SIZE
 };
 特殊字段：SIZE

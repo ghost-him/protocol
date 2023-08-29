@@ -22,23 +22,18 @@ public:
 		switch (option._type) {
 		case INT: {
 			int res = 0;
-			for (int i = option._length; i >= 0; i--) {
-				res = (res << 8) + (_data[start + i] << (8 * i)) & 0xff;
+			for (int i = option._length - 1; i >= 0; i--) {
+				res = (res << 8) + ((_data[start + i]) & 0xff);
 			}
 			return res;
 		} 
 		case SIZE:
 		case UINT: {
 			unsigned int res = 0;
-			for (int i = option._length; i >= 0; i--) {
-				res = (res << 8) + (_data[start + i] << (8 * i)) & 0xff;
+			for (int i = option._length - 1; i >= 0; i--) {
+				res = (res << 8) + ((_data[start + i]) & 0xff);
 			}
 			return res;
-		} case STR: {
-			std::string res;
-			for (int i = 0; i < option._length; i++) {
-				res.push_back(static_cast<char>(_data[start + i]));
-			}
 		}
 		}
 	}

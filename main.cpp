@@ -26,7 +26,7 @@ int main() {
     // 设置头标记
     builder.set_head(0, 1);     // 版本号          1
     builder.set_head(1, 1);     // 消息类型        1
-    builder.set_head(2, 20);    // 总长度          20
+    builder.set_head(2, 8814);    // 总长度          20
     builder.set_head(3, 0);     // 消息组          0
     builder.set_head(4, 0);     // 当前消息的偏移量 0
 
@@ -43,6 +43,10 @@ int main() {
     // 传递的过程是字符流
     unsigned char* data = static_cast<unsigned char*>(proto->data());
 
+    for (int i = 0; i < 50; i++) {
+        printf("%x ", data[i]);
+    }
+
     //////////////////////////////////////////////
     // 
     // 接收方
@@ -56,7 +60,7 @@ int main() {
     // 解码
     converter.convert(data);
     // 输出传递的原始数据
-    std::cout.write(static_cast<char *>(proto->data()), proto->size());
+   // std::cout.write(static_cast<char *>(proto->data()), proto->size());
     // 输出首部信息
     std::cout << "0 " << converter.get_head<unsigned int>(0) << std::endl;
     std::cout << "1 " << converter.get_head<unsigned int>(1) << std::endl;

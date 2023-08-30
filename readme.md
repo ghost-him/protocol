@@ -33,7 +33,9 @@ std::shared_ptr<Protocol> set_data(void* data, unsigned int size);
 参数：
 	data：指向数据内容的指针
 	size：数据的长度
-返回：生成的协议指针
+返回：
+    成功：生成的协议指针
+    失败：nullptr（数据的长度超出了当前协议一次可以传输的长度）
 ```
 
 ### protocolConverter
@@ -171,6 +173,9 @@ builder.set_head(5, "支持字符");     // 说明信息 0
 char a[3] = "10";
 // 生成可用于发送的协议 
 auto proto = builder.set_data(a, 2);
+// 如果生成失败，则返回（如果当前的数据长度超过了一次可以传输的长度）
+if (proto == nullptr)
+    return ;
 // proto对象就是根据a生成出来的协议
 ```
 
@@ -223,4 +228,3 @@ std::cout << "6 " << converter.get_head<unsigned int>(6) << std::endl;
  // 输出b的内容
  std::cout << b << std::endl;
 ```
-

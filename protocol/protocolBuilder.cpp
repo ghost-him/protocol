@@ -21,9 +21,14 @@ void ProtocolBuilder::load(std::shared_ptr<ProtocolOption> option) {
 }
 // 设置数据内容
 std::shared_ptr<Protocol> ProtocolBuilder::set_data(void* data, unsigned int size) {
-	std::shared_ptr<Protocol> res = std::make_shared<Protocol>();
 	// 计算总长度 总长度 = 首部长度 + 数据长度
 	unsigned int total_size = _sum[_length] + size;
+	// 判断数据大小是否合法
+	if (total_size > _option->size()) {
+		return nullptr;
+	}
+	// 如果满足
+	std::shared_ptr<Protocol> res = std::make_shared<Protocol>();
 	// 初始化协议对象，赋予长度和空间
 	res->_size = total_size;
 	res->_data.reset(new unsigned char[total_size]);

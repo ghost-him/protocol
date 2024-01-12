@@ -1,39 +1,69 @@
 #include "protocolConverter.h"
 
+#include <cstring>
+
 ProtocolConverter::ProtocolConverter() {
 	_length = 0;
 	_option = nullptr;
 	_data = nullptr;
 }
 
-// ¼ÓÔØÒª½âÂëµÄÊı¾İ
-void ProtocolConverter::convert(unsigned char* data) {
+// åŠ è½½è¦è§£ç çš„æ•°æ®
+void ProtocolConverter::parseData(unsigned char * data) {
 	_data = data;
 }
 
-// ¼ÓÔØĞ­Òé¹æÔò
-void ProtocolConverter::load(std::shared_ptr<ProtocolOption> option) {
+// åŠ è½½åè®®è§„åˆ™
+void ProtocolConverter::setProtocolOption(std::shared_ptr<ProtocolOption> option) {
 	_option = option;
-	// ³õÊ¼»¯Ç°×ººÍÊı×é
+	// åˆå§‹åŒ–å‰ç¼€å’Œæ•°ç»„
 	_length = _option->_optionList.size();
 
 	_sum.resize(_length + 1);
-	// ¼ÆËãÇ°×ººÍÊı×é
+	// è®¡ç®—å‰ç¼€å’Œæ•°ç»„
 	for (int i = 1; i <= _length; i++) {
 		_sum[i] = _sum[i - 1] + _option->_optionList[i - 1]._length;
 	}
 }
+OptionValue ProtocolConverter::getHeaderField(unsigned int index) {
+	_Option& option = _option->_optionList[index];
 
+	// è·å–å½“å‰æ ‡è®°å¼€å§‹çš„ä½ç½®
+	int start = _sum[index];
+	switch (option._type) {
+	case INT: {
+		int res = 0;
+		for (int i = 0; i < option._length; i++) {
+			res = (res << 8) + ((_data[start + i]) & 0xff);
+		}
+		return res;
+	}
+	case SIZE: {
+		unsigned int res = 0;
+		for (int i = 0; i < option._length; i++) {
+			res = (res << 8) + ((_data[start + i]) & 0xff);
+		}
+		return (int)res;
+	}
+	case STR: {
+		std::string res;
+		for (int i = 0; i < option._length; i++) {
+			res.push_back(_data[start + i]);
+		}
+		return res;
+	}
+	}
+}
 
-void ProtocolConverter::get_data(void* destination) {
-	// ¼ÆËãÊı¾İ²¿·ÖµÄ³¤¶È£º×Ü³¤¶È - Ê×²¿µÄ³¤¶È
-	unsigned int data_size = get_head<unsigned int>(_option->_size_index) - _sum[_length];
-	// ½«ÄÚÈİ¸´ÖÆ³öÈ¥
+void ProtocolConverter::copyParsedData(void* destination) {
+	// è®¡ç®—æ•°æ®éƒ¨åˆ†çš„é•¿åº¦ï¼šæ€»é•¿åº¦ - é¦–éƒ¨çš„é•¿åº¦
+	int data_size = std::get<int>(getHeaderField(_option->_size_index)) - _sum[_length];
+	// å°†å†…å®¹å¤åˆ¶å‡ºå»
 	memcpy(destination,  _data + _sum[_length], data_size);
 }
 
-unsigned int ProtocolConverter::get_data_size() {
-	// ¼ÆËãÊı¾İ²¿·ÖµÄ³¤¶È£º×Ü³¤¶È - Ê×²¿µÄ³¤¶È
-	unsigned int data_size = get_head<unsigned int>(_option->_size_index) - _sum[_length];
+unsigned int ProtocolConverter::getParsedDataSize() {
+	// è®¡ç®—æ•°æ®éƒ¨åˆ†çš„é•¿åº¦ï¼šæ€»é•¿åº¦ - é¦–éƒ¨çš„é•¿åº¦
+	unsigned int data_size = (unsigned int)std::get<int>(getHeaderField(_option->_size_index)) - _sum[_length];
 	return data_size;
 }

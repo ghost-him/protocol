@@ -1,5 +1,4 @@
 #pragma once
-#include <bitset>
 #include "protocolOption.h"
 #include <memory>
 
@@ -13,15 +12,15 @@ public:
 
     const Protocol& operator=(const Protocol& pro);
 
-    // »ñÈ¡Êı¾İÖ¸Õë
+    // è·å–æ•°æ®æŒ‡é’ˆ
     void* data();
-    // »ñÈ¡×ÜÌåµÄ³¤¶È
+    // è·å–æ€»ä½“çš„é•¿åº¦
     unsigned int size();
 
 private:
-    // ÓÃÓÚ´æ´¢µ±Ç°µÄÊı¾İ
+    // ç”¨äºå­˜å‚¨å½“å‰çš„æ•°æ®
     std::unique_ptr<unsigned char[]> _data;
-    // µ±Ç°µÄ³¤¶È
+    // å½“å‰çš„é•¿åº¦
     unsigned int _size;
 
     void init(const Protocol& pro);

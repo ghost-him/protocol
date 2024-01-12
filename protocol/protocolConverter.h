@@ -5,66 +5,29 @@
 class ProtocolConverter {
 public:
 	ProtocolConverter();
-	// ¼ÓÔØÒª½âÂëµÄÊı¾İ
-	void convert(unsigned char* data);
+	// åŠ è½½è¦è§£æçš„åè®®æ•°æ®
+	void parseData(unsigned char * data);
 
-	// ¼ÓÔØĞ­Òé¹æÔò
-	void load(std::shared_ptr<ProtocolOption> option);
+	// è®¾ç½®åè®®è§£æè§„åˆ™
+	void setProtocolOption(std::shared_ptr<ProtocolOption> option);
+	
+	// è·å–ç‰¹å®šç´¢å¼•çš„é¦–éƒ¨å­—æ®µå€¼
+	OptionValue getHeaderField(unsigned int index);
 
-	template<class value>
-	value get_head(unsigned int index) {
-		_Option& option = _option->_optionList[index];
+	// å°†è§£æçš„åè®®æ•°æ®å¤åˆ¶åˆ°ç›®æ ‡ç¼“å†²åŒº
+	void copyParsedData(void* destination);
 
-		// »ñÈ¡µ±Ç°±ê¼Ç¿ªÊ¼µÄÎ»ÖÃ
-		int start = _sum[index];
-		switch (option._type) {
-		case INT: {
-			int res = 0;
-			for (int i = option._length - 1; i >= 0; i--) {
-				res = (res << 8) + ((_data[start + i]) & 0xff);
-			}
-			return res;
-		} 
-		case SIZE:
-		case UINT: {
-			unsigned int res = 0;
-			for (int i = option._length - 1; i >= 0; i--) {
-				res = (res << 8) + ((_data[start + i]) & 0xff);
-			}
-			return res;
-		}
-		}
-	}
-
-	template<>
-	std::string get_head<std::string>(unsigned int index) {
-		_Option& option = _option->_optionList[index];
-		// »ñÈ¡µ±Ç°±ê¼Ç¿ªÊ¼µÄÎ»ÖÃ
-		int start = _sum[index];
-		switch (option._type) {
-		case STR: {
-			std::string res;
-			for (int i = 0; i < option._length; i++) {
-				res.push_back(_data[start + i]);
-			}
-			return res;
-		}
-		}
-	}
-
-
-
-	void get_data(void* destination);
-	unsigned int get_data_size();
+	// è·å–è§£æçš„åè®®æ•°æ®å¤§å°
+	unsigned int getParsedDataSize();
 
 private:
-	// Êı¾İµÄÔ­µØÖ·
+	// æ•°æ®çš„åŸåœ°å€
 	unsigned char* _data;
-	// Ğ­Òé¸ñÊ½
+	// åè®®æ ¼å¼
 	std::shared_ptr<ProtocolOption> _option;
-	// Í·±ê¼ÇµÄ¸öÊı
+	// å¤´æ ‡è®°çš„ä¸ªæ•°
 	unsigned int _length;
-	// Í·±ê¼ÇµÄÆôÊ¼Î»ÖÃ
+	// å¤´æ ‡è®°çš„å¯å§‹ä½ç½®
 	std::deque<unsigned int> _sum;
 	
 };

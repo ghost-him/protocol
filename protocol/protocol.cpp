@@ -15,11 +15,11 @@ const Protocol& Protocol::operator=(const Protocol& pro) {
 	return *this;
 }
 
-// »ñÈ¡Êı¾İÖ¸Õë
+// è·å–æ•°æ®æŒ‡é’ˆ
 void* Protocol::data() {
 	return _data.get();
 }
-// »ñÈ¡×ÜÌåµÄ³¤¶È
+// è·å–æ€»ä½“çš„é•¿åº¦
 unsigned int Protocol::size() {
 	return _size;
 }
@@ -28,7 +28,7 @@ void Protocol::init(const Protocol& pro) {
 	_size = pro._size;
 
 	_data.reset(new unsigned char[_size]);
-	// ¸´ÖÆÊı¾İ
+	// å¤åˆ¶æ•°æ®
 	for (int i = 0, siz = _size; i < siz; i++) {
 		_data[i] = pro._data[i];
 	}

@@ -1,42 +1,71 @@
 #include "protocolBuilder.h"
 
+#include <cstring>
+
 ProtocolBuilder::ProtocolBuilder() {
 	_length = 0;
 	_option = nullptr;
 }
 
-void ProtocolBuilder::load(std::shared_ptr<ProtocolOption> option) {
+void ProtocolBuilder::setProtocolOption(std::shared_ptr<ProtocolOption> option) {
 	_option = option;
 
-	// ³õÊ¼»¯Ç°×ººÍÊı×é
+	// åˆå§‹åŒ–å‰ç¼€å’Œæ•°ç»„
 	_length = _option->_optionList.size();
 	_sum.resize(_length + 1);
-	// ¼ÆËãÇ°×ººÍÊı×é
+	// è®¡ç®—å‰ç¼€å’Œæ•°ç»„
 	for (int i = 1; i <= _length; i++) {
 		_sum[i] = _sum[i - 1] + _option->_optionList[i - 1]._length;
 	}
-	// ¿ª±ÙÒ»¸öÍ·±ê¼Ç³¤¶ÈµÄ¿Õ¼ä£¬¸øÍ·±ê¼Ç»º³åÇø
-	// _sum[_length]±íÊ¾Í·±ê¼ÇµÄ³¤¶È
+	// å¼€è¾Ÿä¸€ä¸ªå¤´æ ‡è®°é•¿åº¦çš„ç©ºé—´ï¼Œç»™å¤´æ ‡è®°ç¼“å†²åŒº
+	// _sum[_length]è¡¨ç¤ºå¤´æ ‡è®°çš„é•¿åº¦
 	_head.reset(new unsigned char[_sum[_length]]);
 }
-// ÉèÖÃÊı¾İÄÚÈİ
-std::shared_ptr<Protocol> ProtocolBuilder::set_data(void* data, unsigned int size) {
-	// ¼ÆËã×Ü³¤¶È ×Ü³¤¶È = Ê×²¿³¤¶È + Êı¾İ³¤¶È
+
+void ProtocolBuilder::setHeaderField(unsigned int index, const OptionValue& value) {
+	_Option& option = _option->_optionList[index];
+	// è·å–å½“å‰æ ‡è®°å¼€å§‹çš„ä½ç½®
+	unsigned int start = _sum[index];
+
+	switch (option._type) {
+	case STR: {
+		std::string str = std::get<std::string>(value);
+		for (unsigned int i = 0; i < option._length && i < str.size(); i++) {
+			_head[start + i] = str[i];
+		}
+		break;
+	}
+    case SIZE:
+	case INT: {
+		int data;
+		data = std::get<int>(value);
+		for (int i = 0; i < option._length; i++) {
+			_head[start + (option._length - 1) - i] = (data >> (8 * i)) & 0xff;
+		}
+		break;
+	}
+	}
+}
+
+
+// è®¾ç½®æ•°æ®å†…å®¹
+std::shared_ptr<Protocol> ProtocolBuilder::buildWithData(void* data, unsigned int size) {
+	// è®¡ç®—æ€»é•¿åº¦ æ€»é•¿åº¦ = é¦–éƒ¨é•¿åº¦ + æ•°æ®é•¿åº¦
 	unsigned int total_size = _sum[_length] + size;
-	// ÅĞ¶ÏÊı¾İ´óĞ¡ÊÇ·ñºÏ·¨
-	if (total_size > _option->size()) {
+	// åˆ¤æ–­æ•°æ®å¤§å°æ˜¯å¦åˆæ³•
+	if (total_size > _option->maxSize()) {
 		return nullptr;
 	}
-	// Èç¹ûÂú×ã
+	// å¦‚æœæ»¡è¶³
 	std::shared_ptr<Protocol> res = std::make_shared<Protocol>();
-	// ³õÊ¼»¯Ğ­Òé¶ÔÏó£¬¸³Óè³¤¶ÈºÍ¿Õ¼ä
+	// åˆå§‹åŒ–åè®®å¯¹è±¡ï¼Œèµ‹äºˆé•¿åº¦å’Œç©ºé—´
 	res->_size = total_size;
 	res->_data.reset(new unsigned char[total_size]);
-	// ÉèÖÃÊı¾İ²¿·ÖµÄ³¤¶È
-	set_head(_option->_size_index, total_size);
-	// ¸´ÖÆÍ·±ê¼ÇµÄÄÚÈİ
+	// è®¾ç½®æ•°æ®éƒ¨åˆ†çš„é•¿åº¦
+	setHeaderField(_option->_size_index, (int)total_size);
+	// å¤åˆ¶å¤´æ ‡è®°çš„å†…å®¹
 	memcpy(res->_data.get(), _head.get(), _sum[_length]);
-	// ¸´ÖÆÊı¾İ²¿·ÖµÄÄÚÈİ
+	// å¤åˆ¶æ•°æ®éƒ¨åˆ†çš„å†…å®¹
 	memcpy(res->_data.get() + _sum[_length], data, size);
 	return res;
 }

@@ -5,49 +5,23 @@
 class ProtocolBuilder {
 public:
 	ProtocolBuilder();
-	// ÉèÖÃĞ­Òé¸ñÊ½
-	void load(std::shared_ptr<ProtocolOption> option);
-	// ÉèÖÃÍ·±ê¼Ç
-	// ÏÂ±ê´Ó0¿ªÊ¼
-	template<class Data>
-	void set_head(unsigned int index, Data data) {
-		_Option& option = _option->_optionList[index];
+	// è®¾ç½®åè®®æ ¼å¼
+	void setProtocolOption(std::shared_ptr<ProtocolOption> option);
 
-		// »ñÈ¡µ±Ç°±ê¼Ç¿ªÊ¼µÄÎ»ÖÃ
-		unsigned int start = _sum[index];
-		for (int i = 0; i < option._length; i++) {
-			_head[start + i] = (data >> (8 * i)) & 0xff;
-		}
-	}
+	// è®¾ç½®ç‰¹å®šç´¢å¼•çš„é¦–éƒ¨å­—æ®µçš„å€¼
+	void setHeaderField(unsigned int index, const OptionValue& value);
 
-	template<>
-	void set_head<const char*>(unsigned int index, const char* data) {
-		_Option& option = _option->_optionList[index];
-
-		// »ñÈ¡µ±Ç°±ê¼Ç¿ªÊ¼µÄÎ»ÖÃ
-		unsigned int start = _sum[index];
-		switch (option._type) {
-		case STR: {
-			for (unsigned int i = 0; i < option._length; i++) {
-				_head[start + i] = data[i];
-			}
-			break;
-		}
-		}
-	}
-
-
-	// ÉèÖÃÊı¾İÄÚÈİ
-	std::shared_ptr<Protocol> set_data(void* data, unsigned int size);
+	// è®¾ç½®åè®®æ•°æ®å†…å®¹
+	std::shared_ptr<Protocol> buildWithData(void* data, unsigned int size);
 
 
 private:
 	std::shared_ptr<ProtocolOption> _option;
 
-	// Í·±ê¼ÇµÄ¸öÊı
+	// å¤´æ ‡è®°çš„ä¸ªæ•°
 	unsigned int _length;
-	// Í·±ê¼ÇµÄÆôÊ¼Î»ÖÃ
+	// å¤´æ ‡è®°çš„å¯å§‹ä½ç½®
 	std::deque<unsigned int> _sum;
-	// Í·±ê¼Ç»º³åÇø
+	// å¤´æ ‡è®°ç¼“å†²åŒº
 	std::unique_ptr<unsigned char[]> _head;
 };

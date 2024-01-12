@@ -1,16 +1,19 @@
 
 #include "protocolOption.h"
 
+#include <cmath>
+
 ProtocolOption::ProtocolOption() {
 	_control = 0b0;
-	_size = -1;
+	_maxSize = -1;
 	_size_index = -1;
 }
 
 
-unsigned int ProtocolOption::size() {
-	return _size;
+unsigned int ProtocolOption::maxSize() {
+	return _maxSize;
 }
+
 
 bool ProtocolOption::append(unsigned int length, protocolType type, std::string description) {
 	switch (type) {
@@ -18,7 +21,7 @@ bool ProtocolOption::append(unsigned int length, protocolType type, std::string 
 		_control[0] = 1;
 		auto len = length * 8;
 		_size_index = _optionList.size();
-		_size = pow(2, len) - 1;
+		_maxSize = pow(2, len) - 1;
 	}
 	default: {
 		_Option one;

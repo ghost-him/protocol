@@ -20,6 +20,7 @@ public:
 	// 获取解析的协议数据大小
 	unsigned int getParsedDataSize();
 
+
 private:
 	// 数据的原地址
 	unsigned char* _data;

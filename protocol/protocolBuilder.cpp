@@ -37,8 +37,8 @@ void ProtocolBuilder::setHeaderField(unsigned int index, const OptionValue& valu
 	}
     case SIZE:
 	case INT: {
-		int data;
-		data = std::get<int>(value);
+		long long data;
+        data = std::get<long long>(value);
 		for (int i = 0; i < option._length; i++) {
 			_head[start + (option._length - 1) - i] = (data >> (8 * i)) & 0xff;
 		}
@@ -67,6 +67,14 @@ std::shared_ptr<Protocol> ProtocolBuilder::buildWithData(void* data, unsigned in
 	memcpy(res->_data.get(), _head.get(), _sum[_length]);
 	// 复制数据部分的内容
 	memcpy(res->_data.get() + _sum[_length], data, size);
-	return res;
+    return res;
+}
+
+std::shared_ptr<Protocol> ProtocolBuilder::buildWithPlainBuffer(void *data, unsigned int size)
+{
+    std::shared_ptr<Protocol> res = std::make_shared<Protocol>();
+    res->_data.reset(new unsigned char[size]);
+    memcpy(res->_data.get(), data, size);
+    return res;
 }
 

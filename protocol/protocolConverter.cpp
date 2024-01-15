@@ -32,7 +32,7 @@ OptionValue ProtocolConverter::getHeaderField(unsigned int index) {
 	int start = _sum[index];
 	switch (option._type) {
 	case INT: {
-		int res = 0;
+        long long res = 0;
 		for (int i = 0; i < option._length; i++) {
 			res = (res << 8) + ((_data[start + i]) & 0xff);
 		}
@@ -43,7 +43,7 @@ OptionValue ProtocolConverter::getHeaderField(unsigned int index) {
 		for (int i = 0; i < option._length; i++) {
 			res = (res << 8) + ((_data[start + i]) & 0xff);
 		}
-		return (int)res;
+        return (unsigned int)res;
 	}
 	case STR: {
 		std::string res;
@@ -57,13 +57,13 @@ OptionValue ProtocolConverter::getHeaderField(unsigned int index) {
 
 void ProtocolConverter::copyParsedData(void* destination) {
 	// 计算数据部分的长度：总长度 - 首部的长度
-	int data_size = std::get<int>(getHeaderField(_option->_size_index)) - _sum[_length];
+    int data_size = std::get<unsigned int>(getHeaderField(_option->_size_index)) - _sum[_length];
 	// 将内容复制出去
 	memcpy(destination,  _data + _sum[_length], data_size);
 }
 
 unsigned int ProtocolConverter::getParsedDataSize() {
 	// 计算数据部分的长度：总长度 - 首部的长度
-	unsigned int data_size = (unsigned int)std::get<int>(getHeaderField(_option->_size_index)) - _sum[_length];
+    unsigned int data_size = (unsigned int)std::get<unsigned int>(getHeaderField(_option->_size_index)) - _sum[_length];
 	return data_size;
 }

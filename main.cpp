@@ -1,46 +1,49 @@
+//
+// Created by ghost-him on 24-1-15.
+//
 #include <iostream>
-#include "protocol/protocol.h"
-#include "protocol/protocolBuilder.h"
-#include "protocol/protocolConverter.h"
+#include "protocol.h"
+#include "protocolBuilder.h"
+#include "protocolConverter.h"
 
 std::shared_ptr<ProtocolOption> option = std::make_shared<ProtocolOption>();
 
 void init() {
-    option->append(1, INT, "°æ±¾ºÅ");
-    option->append(1, INT, "ÏûÏ¢ÀàĞÍ");
-    option->append(4, INT, "×Ü³¤¶È");
-    option->append(2, INT, "ÏûÏ¢×é");
-    option->append(4, INT, "Æ«ÒÆÁ¿");
-    option->append(8, STR, "ËµÃ÷ĞÅÏ¢");
-    option->append(3, SIZE, "ÏûÏ¢³¤¶È");
+    option->append(1, INT, "ç‰ˆæœ¬å·");
+    option->append(1, INT, "æ¶ˆæ¯ç±»å‹");
+    option->append(4, INT, "æ€»é•¿åº¦");
+    option->append(2, INT, "æ¶ˆæ¯ç»„");
+    option->append(4, INT, "åç§»é‡");
+    option->append(8, STR, "è¯´æ˜ä¿¡æ¯");
+    option->append(3, SIZE, "æ¶ˆæ¯é•¿åº¦");
 }
 
 int main() {
     init();
 
-    // ³õÊ¼»¯Éú³ÉÆ÷
+    // åˆå§‹åŒ–ç”Ÿæˆå™¨
     ProtocolBuilder builder;
-    // ¼ÓÔØĞ­ÒéµÄ¸ñÊ½
+    // åŠ è½½åè®®çš„æ ¼å¼
     builder.setProtocolOption(option);
-    // ÉèÖÃÍ·±ê¼Ç
-    builder.setHeaderField(0, 1);     // °æ±¾ºÅ          1
-    builder.setHeaderField(1, 1);     // ÏûÏ¢ÀàĞÍ        1
-    builder.setHeaderField(2, 20);    // ×Ü³¤¶È          20
-    builder.setHeaderField(3, 0);     // ÏûÏ¢×é          0
-    builder.setHeaderField(4, 0);     // µ±Ç°ÏûÏ¢µÄÆ«ÒÆÁ¿ 0
-    builder.setHeaderField(5, "12345678");     // ËµÃ÷ĞÅÏ¢ 0
+    // è®¾ç½®å¤´æ ‡è®°
+    builder.setHeaderField(0, 1);     // ç‰ˆæœ¬å·          1
+    builder.setHeaderField(1, 1);     // æ¶ˆæ¯ç±»å‹        1
+    builder.setHeaderField(2, 20);    // æ€»é•¿åº¦          20
+    builder.setHeaderField(3, 0);     // æ¶ˆæ¯ç»„          0
+    builder.setHeaderField(4, 0);     // å½“å‰æ¶ˆæ¯çš„åç§»é‡ 0
+    builder.setHeaderField(5, "12345678");     // è¯´æ˜ä¿¡æ¯ 0
 
 
-    // ·¢ËÍaÊı×é
+    // å‘é€aæ•°ç»„
     char a[3] = "10";
-    // Éú³É¿ÉÓÃÓÚ·¢ËÍµÄĞ­Òé 
+    // ç”Ÿæˆå¯ç”¨äºå‘é€çš„åè®®
     auto proto = builder.buildWithData(a, 2);
-    
+
     /////////////////////////////////
-    // ·¢ËÍ
+    // å‘é€
     //////////////////
 
-    // ´«µİµÄ¹ı³ÌÊÇ×Ö·ûÁ÷
+    // ä¼ é€’çš„è¿‡ç¨‹æ˜¯å­—ç¬¦æµ
     unsigned char* data = static_cast<unsigned char*>(proto->data());
 
     std::bitset<8> bit;
@@ -51,35 +54,35 @@ int main() {
     std::cout << std::endl;
 
     //////////////////////////////////////////////
-    // 
-    // ½ÓÊÕ·½
-    // ////////////////////////////////// 
+    //
+    // æ¥æ”¶æ–¹
+    // //////////////////////////////////
 
 
-    // ½âÂëÆ÷
+    // è§£ç å™¨
     ProtocolConverter converter;
-    // ¼ÓÔØÏàÍ¬µÄĞ­Òé¸ñÊ½
+    // åŠ è½½ç›¸åŒçš„åè®®æ ¼å¼
     converter.setProtocolOption(option);
-    // ½âÂë
+    // è§£ç 
     converter.parseData(data);
-    // Êä³ö´«µİµÄÔ­Ê¼Êı¾İ
-   // std::cout.write(static_cast<char *>(proto->data()), proto->size());
-    // Êä³öÊ×²¿ĞÅÏ¢
-    std::cout << "0 " << std::get<int>(converter.getHeaderField(0)) << std::endl;
-    std::cout << "1 " << std::get<int>(converter.getHeaderField(1)) << std::endl;
-    std::cout << "2 " << std::get<int>(converter.getHeaderField(2)) << std::endl;
-    std::cout << "3 " << std::get<int>(converter.getHeaderField(3)) << std::endl;
-    std::cout << "4 " << std::get<int>(converter.getHeaderField(4)) << std::endl;
+    // è¾“å‡ºä¼ é€’çš„åŸå§‹æ•°æ®
+    // std::cout.write(static_cast<char *>(proto->data()), proto->size());
+    // è¾“å‡ºé¦–éƒ¨ä¿¡æ¯
+    std::cout << "0 " << std::get<long long>(converter.getHeaderField(0)) << std::endl;
+    std::cout << "1 " << std::get<long long>(converter.getHeaderField(1)) << std::endl;
+    std::cout << "2 " << std::get<long long>(converter.getHeaderField(2)) << std::endl;
+    std::cout << "3 " << std::get<long long>(converter.getHeaderField(3)) << std::endl;
+    std::cout << "4 " << std::get<long long>(converter.getHeaderField(4)) << std::endl;
 
     std::cout << "5 " << std::get<std::string>(converter.getHeaderField(5)) << std::endl;
-    std::cout << "6 " << std::get<int>(converter.getHeaderField(6)) << std::endl;
-    // ¿ªÒ»¸ö¿Õ¼ä£¬ÓÃÓÚ´æ·ÅÊı¾İ²¿·Ö
+    std::cout << "6 " << std::get<unsigned int>(converter.getHeaderField(6)) << std::endl;
+    // å¼€ä¸€ä¸ªç©ºé—´ï¼Œç”¨äºå­˜æ”¾æ•°æ®éƒ¨åˆ†
     char b[5] = {};
-    // ½«Êı¾İ²¿·Ö·Åµ½bÊı×éÖĞ
+    // å°†æ•°æ®éƒ¨åˆ†æ”¾åˆ°bæ•°ç»„ä¸­
     converter.copyParsedData(b);
-    std::cout << "½âÎö³öÊı¾İÄÚÈİÎª ";
-    // Êä³öbµÄÄÚÈİ
+    std::cout << "è§£æå‡ºæ•°æ®å†…å®¹ä¸º ";
+    // è¾“å‡ºbçš„å†…å®¹
     std::cout << b << std::endl;
-    
-     return 0;
+
+    return 0;
 }

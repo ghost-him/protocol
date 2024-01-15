@@ -14,6 +14,9 @@ public:
 	// 设置协议数据内容
 	std::shared_ptr<Protocol> buildWithData(void* data, unsigned int size);
 
+    // build with plain buffer
+
+    std::shared_ptr<Protocol> buildWithPlainBuffer(void* data, unsigned int size);
 
 private:
 	std::shared_ptr<ProtocolOption> _option;

@@ -18,7 +18,7 @@ public:
 };
 
 
-using OptionValue = std::variant<int, unsigned int, std::string>;
+using OptionValue = std::variant<long long, unsigned int, std::string>;
 
 class ProtocolOption {
 	friend class ProtocolConverter;
